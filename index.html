@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TraderOS — Market Knowledge Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  --white:#FFFFFF;
+  --gray-50:#F8F9FA;--gray-100:#F1F3F5;--gray-200:#E9ECEF;
+  --gray-300:#DEE2E6;--gray-400:#CED4DA;--gray-500:#ADB5BD;
+  --gray-600:#6C757D;--gray-700:#495057;--gray-800:#343A40;--gray-900:#212529;
+  --blue-50:#EFF6FF;--blue-100:#DBEAFE;--blue-500:#3B82F6;
+  --blue-600:#2563EB;--blue-700:#1D4ED8;
+  --bg:#F3F4F6;--panel:#FFFFFF;
+  --t1:#111827;--t2:#374151;--t3:#6B7280;--t4:#9CA3AF;
+  --bd:#E5E7EB;--bd-md:#D1D5DB;
+  --sh-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 12px rgba(0,0,0,.09),0 2px 4px rgba(0,0,0,.04);
+  --sh-lg:0 12px 32px rgba(0,0,0,.11),0 4px 8px rgba(0,0,0,.05);
+  --r:10px;--r-sm:6px;--r-lg:14px;
+}
+
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;font-size:14px}
+
+/* SIDEBAR */
+.sidebar{width:236px;min-height:100vh;background:var(--panel);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-logo{padding:18px 18px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;border-radius:8px;background:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:700;color:var(--t1)}
+.logo-sub{font-size:11px;color:var(--t4);margin-top:1px}
+.sidebar-section{padding:18px 10px 6px}
+.sidebar-section-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t4);padding:0 8px;margin-bottom:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .15s;text-decoration:none;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--gray-100);color:var(--t1)}
+.nav-item.active{background:var(--blue-50);color:var(--blue-700);font-weight:600}
+.nav-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.nav-count{margin-left:auto;font-size:11px;font-weight:600;background:var(--gray-100);color:var(--t4);padding:1px 7px;border-radius:10px}
+.nav-item.active .nav-count{background:var(--blue-100);color:var(--blue-700)}
+.sidebar-bottom{margin-top:auto;padding:14px 10px;border-top:1px solid var(--bd)}
+.add-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:var(--r-sm);background:var(--blue-600);color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
+.add-btn:hover{background:var(--blue-700)}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{background:var(--panel);border-bottom:1px solid var(--bd);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:20}
+.topbar-title{font-size:14px;font-weight:600;color:var(--t1)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.search-wrap{position:relative}
+.search-input{font-family:'Inter',sans-serif;font-size:13px;background:var(--gray-100);border:1px solid var(--bd);border-radius:var(--r-sm);padding:6px 12px 6px 30px;color:var(--t1);width:210px;outline:none;transition:all .2s}
+.search-input:focus{background:#fff;border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(59,130,246,.1);width:250px}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--t4);font-size:13px;pointer-events:none}
+.clock-pill{font-size:12px;font-weight:600;color:var(--t3);background:var(--gray-100);border:1px solid var(--bd);padding:5px 11px;border-radius:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* CONTENT */
+.content{padding:24px;flex:1}
+
+/* STAT STRIP */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh-sm)}
+.stat-value{font-size:22px;font-weight:700;color:var(--t1);line-height:1;margin-bottom:3px}
+.stat-label{font-size:12px;color:var(--t3);font-weight:500}
+.stat-sub{font-size:11px;color:var(--t4);margin-top:1px}
+
+/* SECTION */
+.section{margin-bottom:32px;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.section:nth-child(1){animation-delay:.03s}.section:nth-child(2){animation-delay:.06s}
+.section:nth-child(3){animation-delay:.09s}.section:nth-child(4){animation-delay:.12s}
+.section:nth-child(5){animation-delay:.15s}.section:nth-child(6){animation-delay:.18s}
+.section:nth-child(7){animation-delay:.21s}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.01em}
+.section-stripe{width:3px;height:14px;border-radius:2px;flex-shrink:0}
+.section-count{font-size:12px;color:var(--t4);font-weight:500}
+
+/* CARD GRID */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+
+/* EBOOK CARD */
+.ebook-card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--r-lg);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:box-shadow .2s,transform .2s,border-color .2s;box-shadow:var(--sh-sm);overflow:hidden;position:relative}
+.ebook-card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);border-color:var(--card-color)}
+.card-top-bar{height:3px;background:var(--card-color);width:100%;flex-shrink:0}
+.card-body{padding:16px 16px 12px;flex:1;display:flex;flex-direction:column;gap:8px}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.card-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--card-bg)}
+.card-category{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:12px;color:var(--card-color);background:var(--card-bg);border:1px solid var(--card-border);white-space:nowrap}
+.card-title{font-size:13px;font-weight:700;color:var(--t1);line-height:1.35}
+.card-desc{font-size:12px;color:var(--t3);line-height:1.6;flex:1}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:var(--gray-100);color:var(--t4);border:1px solid var(--bd)}
+.card-footer{padding:10px 16px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:var(--gray-50);flex-shrink:0}
+.card-meta{display:flex;gap:12px}
+.meta-item{font-size:11px;color:var(--t4);display:flex;align-items:center;gap:3px}
+.open-link{font-size:11px;font-weight:700;color:var(--card-color);display:flex;align-items:center;gap:4px;letter-spacing:.03em;text-transform:uppercase}
+.open-arrow{width:20px;height:20px;border-radius:50%;background:var(--card-bg);display:flex;align-items:center;justify-content:center;font-size:11px;transition:background .15s,color .15s}
+.ebook-card:hover .open-arrow{background:var(--card-color);color:#fff}
+.ebook-card.featured{grid-column:1/-1}
+.ebook-card.featured .card-title{font-size:15px}
+.ebook-card.featured .card-body{padding:18px 18px 14px}
+.ebook-card.featured .card-icon{width:42px;height:42px;font-size:20px}
+
+/* ADD CARD */
+.card-add{border:2px dashed var(--bd-md);border-radius:var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:24px 16px;cursor:pointer;transition:all .2s;background:transparent;text-align:center;min-height:100px}
+.card-add:hover{border-color:var(--blue-500);background:var(--blue-50)}
+.add-plus{font-size:20px;color:var(--gray-400);transition:color .2s;font-weight:300}
+.card-add:hover .add-plus{color:var(--blue-600)}
+.add-label{font-size:12px;font-weight:500;color:var(--t4);transition:color .2s}
+.card-add:hover .add-label{color:var(--blue-600)}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;background:var(--panel);border:1px solid var(--bd);border-radius:var(--r-lg);color:var(--t3)}
+.empty-icon{font-size:32px;margin-bottom:10px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(17,24,39,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border:1px solid var(--bd);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:26px;width:500px;max-width:95vw;position:relative;animation:modalIn .2s ease-out}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.modal-title{font-size:16px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.modal-sub{font-size:13px;color:var(--t3);margin-bottom:20px}
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.form-input,.form-select,.form-textarea{width:100%;font-family:'Inter',sans-serif;font-size:13px;background:#fff;border:1px solid var(--bd-md);border-radius:var(--r-sm);padding:8px 11px;color:var(--t1);outline:none;transition:border-color .15s,box-shadow .15s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-textarea{resize:vertical;min-height:60px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bd)}
+.btn{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;padding:8px 18px;border-radius:var(--r-sm);border:none;cursor:pointer;transition:all .15s}
+.btn-ghost{background:transparent;border:1px solid var(--bd-md);color:var(--t2)}.btn-ghost:hover{background:var(--gray-100)}
+.btn-primary{background:var(--blue-600);color:#fff}.btn-primary:hover{background:var(--blue-700)}
+.modal-close{position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;font-size:17px;color:var(--t4);padding:4px 6px;border-radius:4px}
+.modal-close:hover{background:var(--gray-100);color:var(--t1)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;z-index:200;background:var(--gray-900);color:#fff;border-radius:var(--r-sm);padding:9px 16px;font-size:13px;font-weight:600;box-shadow:var(--sh-lg);animation:toastIn .2s ease,toastOut .2s ease 2.5s forwards;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(8px)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){.sidebar{display:none}.stat-strip{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.stat-strip{grid-template-columns:1fr}.content{padding:16px}}
+
+/* DARK THEME */
+[data-theme="dark"] {
+  --bg:#111827;
+  --panel:#1F2937;
+  --sidebar:#1F2937;
+  --t1:#F9FAFB;
+  --t2:#E5E7EB;
+  --t3:#9CA3AF;
+  --t4:#6B7280;
+  --bd:#374151;
+  --bd-md:#4B5563;
+  --gray-50:#1F2937;
+  --gray-100:#374151;
+  --gray-200:#4B5563;
+  --white:#1F2937;
+  --sh-sm:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);
+  --sh-md:0 4px 12px rgba(0,0,0,.4),0 2px 4px rgba(0,0,0,.2);
+  --sh-lg:0 12px 32px rgba(0,0,0,.5),0 4px 8px rgba(0,0,0,.3);
+  --blue-50:#1E3A5F;
+  --blue-100:#1E40AF33;
+}
+[data-theme="dark"] .sidebar-logo,
+[data-theme="dark"] .topbar,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background:var(--panel);
+  color:var(--t1);
+}
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background:#374151;
+  border-color:var(--bd-md);
+  color:var(--t1);
+}
+[data-theme="dark"] .tag { background:#374151; border-color:#4B5563; color:var(--t3); }
+[data-theme="dark"] .card-footer { background:#374151; }
+[data-theme="dark"] .nav-item:hover { background:#374151; }
+[data-theme="dark"] .search-input { background:#374151; border-color:var(--bd); color:var(--t1); }
+[data-theme="dark"] .search-input:focus { background:#4B5563; }
+[data-theme="dark"] .clock-pill { background:#374151; border-color:var(--bd); }
+[data-theme="dark"] .stat-card { background:var(--panel); }
+[data-theme="dark"] .btn-ghost { border-color:var(--bd-md); color:var(--t2); }
+[data-theme="dark"] .btn-ghost:hover { background:#374151; }
+[data-theme="dark"] .modal { background:#1F2937; border-color:var(--bd); }
+[data-theme="dark"] .modal-actions { border-color:var(--bd); }
+[data-theme="dark"] .card-add:hover { background:#1E3A5F22; }
+
+/* THEME TOGGLE BUTTON */
+.theme-toggle {
+  display:flex;align-items:center;gap:0;
+  background:var(--gray-100);border:1px solid var(--bd);
+  border-radius:20px;padding:3px;flex-shrink:0;
+}
+.theme-btn {
+  display:flex;align-items:center;gap:5px;
+  padding:4px 11px;border-radius:16px;border:none;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .18s;color:var(--t3);background:transparent;
+  white-space:nowrap;
+}
+.theme-btn.active {
+  background:var(--panel);color:var(--t1);
+  box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+}
+[data-theme="dark"] .theme-btn.active {
+  background:#374151;box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">T</div>
+    <div>
+      <div class="logo-text">TraderOS</div>
+      <div class="logo-sub">Knowledge Hub</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Library</div>
+    <button class="nav-item active" onclick="filterBy('all',this)">
+      <span style="font-size:14px">📚</span> All Books
+      <span class="nav-count" id="cnt-all">0</span>
+    </button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Categories</div>
+    <button class="nav-item" onclick="filterBy('market-profile',this)">
+      <span class="nav-dot" style="background:#0F766E"></span>Market Profile
+      <span class="nav-count" id="cnt-market-profile">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('order-flow',this)">
+      <span class="nav-dot" style="background:#1D4ED8"></span>Order Flow
+      <span class="nav-count" id="cnt-order-flow">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('volume',this)">
+      <span class="nav-dot" style="background:#7C3AED"></span>Volume Analysis
+      <span class="nav-count" id="cnt-volume">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('options',this)">
+      <span class="nav-dot" style="background:#B45309"></span>Options Selling
+      <span class="nav-count" id="cnt-options">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('workbook',this)">
+      <span class="nav-dot" style="background:#0369A1"></span>Workbooks
+      <span class="nav-count" id="cnt-workbook">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('period',this)">
+      <span class="nav-dot" style="background:#15803D"></span>Period Analysis
+      <span class="nav-count" id="cnt-period">0</span>
+    </button>
+    <button class="nav-item" onclick="filterBy('other',this)">
+      <span class="nav-dot" style="background:#BE185D"></span>Other
+      <span class="nav-count" id="cnt-other">0</span>
+    </button>
+  </div>
+
+  <div class="sidebar-bottom">
+    <button class="add-btn" onclick="openModal()">＋ Add New Book</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">All Books</div>
+    <div class="topbar-right">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" id="searchInput" placeholder="Search… (Ctrl+K)" oninput="searchCards(this.value)">
+      </div>
+      <div class="theme-toggle" id="themeToggle">
+        <button class="theme-btn active" id="btn-light" onclick="setTheme('light')">☀ Light</button>
+        <button class="theme-btn" id="btn-dark" onclick="setTheme('dark')">☾ Dark</button>
+      </div>
+      <div class="clock-pill" id="clock">—</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="stat-strip">
+      <div class="stat-card"><div class="stat-value" id="s-total">0</div><div class="stat-label">Total Books</div><div class="stat-sub">in your library</div></div>
+      <div class="stat-card"><div class="stat-value" id="s-cats">0</div><div class="stat-label">Categories</div><div class="stat-sub">topics covered</div></div>
+      <div class="stat-card"><div class="stat-value">NSE</div><div class="stat-label">Exchange</div><div class="stat-sub">Nifty · Bank Nifty</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--blue-600)" id="s-featured">0</div><div class="stat-label">Featured Guides</div><div class="stat-sub">comprehensive ebooks</div></div>
+    </div>
+    <div id="dashboard-content"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">Add New Book</div>
+    <div class="modal-sub">Link any HTML ebook, workbook or guide to the dashboard</div>
+    <div class="form-group"><label class="form-label">Book Title *</label><input class="form-input" id="f-title" type="text" placeholder="e.g. Advanced Market Profile Workbook"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="f-desc" placeholder="What does this guide cover?"></textarea></div>
+    <div class="form-row">
+      <div class="form-group" style="margin:0"><label class="form-label">URL / Filename *</label><input class="form-input" id="f-url" type="text" placeholder="ebook.html"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Category *</label>
+        <select class="form-select" id="f-cat">
+          <option value="market-profile">Market Profile</option>
+          <option value="order-flow">Order Flow</option>
+          <option value="volume">Volume Analysis</option>
+          <option value="options">Options Selling</option>
+          <option value="workbook">Workbook</option>
+          <option value="period">Period Analysis</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row" style="margin-top:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">Icon (emoji)</label><input class="form-input" id="f-icon" type="text" placeholder="📊" maxlength="4"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Tags (comma separated)</label><input class="form-input" id="f-tags" type="text" placeholder="nifty, intraday"></div>
+    </div>
+    <div class="form-row" style="margin-top:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">Chapters / Pages</label><input class="form-input" id="f-chapters" type="text" placeholder="12 chapters"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Featured card?</label>
+        <select class="form-select" id="f-featured">
+          <option value="false">Normal</option>
+          <option value="true">Featured (full width)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="addBook()">Add Book</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS={
+  'market-profile':{label:'Market Profile', color:'#0F766E',bg:'#F0FDFA',border:'#99F6E4'},
+  'order-flow':    {label:'Order Flow',      color:'#1D4ED8',bg:'#EFF6FF',border:'#BFDBFE'},
+  'volume':        {label:'Volume Analysis', color:'#7C3AED',bg:'#F5F3FF',border:'#DDD6FE'},
+  'options':       {label:'Options Selling', color:'#B45309',bg:'#FFFBEB',border:'#FDE68A'},
+  'workbook':      {label:'Workbooks',       color:'#0369A1',bg:'#F0F9FF',border:'#BAE6FD'},
+  'period':        {label:'Period Analysis', color:'#15803D',bg:'#F0FDF4',border:'#BBF7D0'},
+  'other':         {label:'Other',           color:'#BE185D',bg:'#FDF2F8',border:'#FBCFE8'},
+};
+
+let BOOKS=[
+  {id:'mp-bible',cat:'market-profile',featured:true,title:'Market Profile Mastery Bible',desc:'Complete A–Z guide to Market Profile. TPO charts, value area, POC, initial balance and session structures for NSE Nifty traders.',url:'market-profile-bible.html',icon:'📊',tags:['TPO','Value Area','POC','Nifty'],chapters:'14 chapters',pages:'300+ concepts'},
+  {id:'mp-intraday',cat:'market-profile',featured:false,title:'Intraday Market Profile',desc:'IB range, extensions, rotations and bracket day patterns for NSE Nifty intraday trading.',url:'mp-intraday.html',icon:'⏱️',tags:['Intraday','IB','Rotations'],chapters:'8 chapters',pages:'150+ concepts'},
+  {id:'mp-auction',cat:'market-profile',featured:false,title:'Auction Theory for Traders',desc:'Markets as auctions — price discovery, acceptance, rejection and positioning around key auction events.',url:'auction-theory.html',icon:'🏛️',tags:['Auction','Price Discovery'],chapters:'6 chapters',pages:'120+ concepts'},
+  {id:'of-complete',cat:'order-flow',featured:true,title:'Order Flow Complete Guide',desc:'Delta, footprint charts, absorption, imbalances and iceberg orders — everything to read real-time order flow on Nifty F&O.',url:'order-flow-guide.html',icon:'🌊',tags:['Delta','Footprint','Absorption','DOM'],chapters:'10 chapters',pages:'200+ concepts'},
+  {id:'of-delta',cat:'order-flow',featured:false,title:'Delta & Cumulative Delta (CVD)',desc:'Buying and selling pressure using delta divergence, CVD signals and delta at key price levels.',url:'delta-analysis.html',icon:'⚡',tags:['CVD','Divergence','Delta'],chapters:'6 chapters',pages:'100+ signals'},
+  {id:'va-complete',cat:'volume',featured:false,title:'Volume Analysis Masterclass',desc:'VSA, effort vs result, No Supply and No Demand bars, Wyckoff method for NSE stocks and indices.',url:'volume-analysis.html',icon:'📈',tags:['VSA','Wyckoff','No Demand'],chapters:'12 chapters',pages:'250+ concepts'},
+  {id:'va-vwap',cat:'volume',featured:false,title:'VWAP & Volume Profile',desc:'Anchored VWAP, standard deviations, volume nodes (HVN/LVN) and composite profiles for Nifty.',url:'vwap-guide.html',icon:'🎯',tags:['VWAP','HVN','LVN','Profile'],chapters:'8 chapters',pages:'180+ setups'},
+  {id:'pmcc-bible',cat:'options',featured:true,title:"PMCC Mastermind — Poor Man's Covered Call",desc:"The most complete guide to Poor Man's Covered Call on NSE Nifty. All scenarios, live calculator, adjustment playbook and checklists.",url:'pmcc-mastermind-ebook.html',icon:'💰',tags:['PMCC','Diagonal','Income','Nifty'],chapters:'12 chapters + bonus',pages:'200+ concepts'},
+  {id:'opt-selling',cat:'options',featured:false,title:'Options Selling Bible',desc:'Straddles, strangles, iron condors, credit spreads with probability analysis and adjustment techniques for NSE.',url:'option-selling.html',icon:'🏦',tags:['Straddle','Iron Condor','Theta'],chapters:'10 chapters',pages:'220+ strategies'},
+  {id:'wb-mp-daily',cat:'workbook',featured:false,title:'Daily Market Profile Workbook',desc:'Structured daily analysis workbook. TPO analysis, value area, bias and trade setup templates for every session.',url:'mp-daily-workbook.html',icon:'📓',tags:['Daily','TPO','Template'],chapters:'30-day structure',pages:'Fillable templates'},
+  {id:'wb-of-journal',cat:'workbook',featured:false,title:'Order Flow Journal Workbook',desc:'Daily order flow journal. Track delta, absorption, imbalances with structured daily templates.',url:'of-journal.html',icon:'📔',tags:['Journal','Delta','Daily'],chapters:'30-day journal',pages:'Structured templates'},
+  {id:'wb-options',cat:'workbook',featured:false,title:'Options Trade Journal Workbook',desc:'Log every trade. Premium collected, adjustments, P&L tracking and lesson capture templates.',url:'options-journal.html',icon:'📒',tags:['Options','P&L','Tracking'],chapters:'Weekly structure',pages:'Trade log templates'},
+  {id:'pa-morning',cat:'period',featured:false,title:'Morning Session Analysis',desc:'Opening auction, IB formation, gap analysis and morning session bias for Nifty (9:15–11:30 AM).',url:'morning-session.html',icon:'🌅',tags:['Opening','Gap','IB'],chapters:'6 chapters',pages:'120+ setups'},
+  {id:'pa-eod',cat:'period',featured:false,title:'End-of-Day Analysis Ebook',desc:'Settlement zone, closing auction, next-day bias and daily profile interpretation for NSE traders.',url:'eod-analysis.html',icon:'🌆',tags:['EOD','Closing Auction','Bias'],chapters:'5 chapters',pages:'100+ concepts'},
+  {id:'pa-weekly',cat:'period',featured:false,title:'Weekly & Monthly Period Ebook',desc:'Weekly profile, monthly auction analysis, expiry-week patterns and period-on-period reading for Nifty.',url:'weekly-monthly.html',icon:'📅',tags:['Weekly','Monthly','Expiry'],chapters:'7 chapters',pages:'140+ patterns'},
+];
+
+let activeFilter='all', searchQuery='';
+
+function render(){
+  updateCounts();
+  const c=document.getElementById('dashboard-content');
+  const f=getFiltered();
+  document.getElementById('s-total').textContent=BOOKS.length;
+  document.getElementById('s-cats').textContent=[...new Set(BOOKS.map(b=>b.cat))].length;
+  document.getElementById('s-featured').textContent=BOOKS.filter(b=>b.featured).length;
+  if(!f.length){c.innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div>No books match. Try a different filter or <button onclick="openModal()" style="background:none;border:none;color:var(--blue-600);font-weight:600;cursor:pointer;font-size:13px">add a new book</button>.</div></div>';return;}
+  const groups={};
+  f.forEach(b=>{if(!groups[b.cat])groups[b.cat]=[];groups[b.cat].push(b);});
+  const order=['market-profile','order-flow','volume','options','workbook','period','other'];
+  let html='';
+  order.forEach(cat=>{
+    if(!groups[cat])return;
+    const books=groups[cat],C=CATS[cat];
+    html+=`<div class="section"><div class="section-head"><div class="section-label"><span class="section-stripe" style="background:${C.color}"></span>${C.label}</div><span class="section-count">${books.length} book${books.length>1?'s':''}</span></div><div class="card-grid">${books.map(b=>renderCard(b)).join('')}<div class="card-add" onclick="openModalWithCat('${cat}')"><div class="add-plus">＋</div><div class="add-label">Add ${C.label}</div></div></div></div>`;
+  });
+  c.innerHTML=html;
+}
+
+function renderCard(b){
+  const C=CATS[b.cat]||CATS['other'];
+  const tags=(b.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+  const feat=b.featured?' featured':'';
+  return `<a class="ebook-card${feat}" href="${b.url}" target="_blank" rel="noopener" style="--card-color:${C.color};--card-bg:${C.bg};--card-border:${C.border}"><div class="card-top-bar"></div><div class="card-body"><div class="card-header"><div class="card-icon">${b.icon||'📘'}</div><span class="card-category">${C.label}</span></div><div class="card-title">${b.title}</div><div class="card-desc">${b.desc}</div>${tags?`<div class="card-tags">${tags}</div>`:''}</div><div class="card-footer"><div class="card-meta">${b.chapters?`<span class="meta-item">📚 ${b.chapters}</span>`:''}${b.pages?`<span class="meta-item">✦ ${b.pages}</span>`:''}</div><div class="open-link">Open <div class="open-arrow">→</div></div></div></a>`;
+}
+
+function getFiltered(){return BOOKS.filter(b=>{const mc=activeFilter==='all'||b.cat===activeFilter;const q=searchQuery.toLowerCase();const mq=!q||b.title.toLowerCase().includes(q)||b.desc.toLowerCase().includes(q)||(b.tags||[]).some(t=>t.toLowerCase().includes(q));return mc&&mq;});}
+
+function filterBy(cat,btn){
+  activeFilter=cat;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  btn.classList.add('active');
+  const labels={'all':'All Books',...Object.fromEntries(Object.entries(CATS).map(([k,v])=>[k,v.label]))};
+  document.getElementById('topbar-title').textContent=labels[cat]||'All Books';
+  render();
+}
+
+function searchCards(q){searchQuery=q;render();}
+
+function updateCounts(){
+  document.getElementById('cnt-all').textContent=BOOKS.length;
+  Object.keys(CATS).forEach(cat=>{const el=document.getElementById('cnt-'+cat);if(el)el.textContent=BOOKS.filter(b=>b.cat===cat).length;});
+}
+
+function tick(){const t=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true,timeZone:'Asia/Kolkata'});document.getElementById('clock').textContent=t+' IST';}
+setInterval(tick,1000);tick();
+
+function openModal(){document.getElementById('modal').classList.add('show');setTimeout(()=>document.getElementById('f-title').focus(),100);}
+function openModalWithCat(cat){openModal();document.getElementById('f-cat').value=cat;}
+function closeModal(){document.getElementById('modal').classList.remove('show');['f-title','f-desc','f-url','f-icon','f-tags','f-chapters'].forEach(id=>{document.getElementById(id).value='';});document.getElementById('f-featured').value='false';}
+
+function addBook(){
+  const title=document.getElementById('f-title').value.trim();
+  const url=document.getElementById('f-url').value.trim();
+  if(!title||!url){showToast('⚠  Title and URL are required');return;}
+  const tags=document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  BOOKS.push({id:'book-'+Date.now(),title,url,desc:document.getElementById('f-desc').value.trim()||'Click to open this guide.',cat:document.getElementById('f-cat').value,icon:document.getElementById('f-icon').value.trim()||'📘',tags,chapters:document.getElementById('f-chapters').value.trim(),pages:'',featured:document.getElementById('f-featured').value==='true'});
+  saveBooks();closeModal();render();showToast('✅  "'+title+'" added to library');
+}
+
+function saveBooks(){try{localStorage.setItem('traderOS_v3',JSON.stringify(BOOKS));}catch(e){}}
+function loadBooks(){try{const s=localStorage.getItem('traderOS_v3');if(s){const p=JSON.parse(s);if(Array.isArray(p)&&p.length>=BOOKS.length)BOOKS=p;}}catch(e){}}
+
+function showToast(msg){document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();document.getElementById('searchInput').focus();}});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+
+// THEME
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('traderOS_theme',t);
+  document.getElementById('btn-light').classList.toggle('active',t==='light');
+  document.getElementById('btn-dark').classList.toggle('active',t==='dark');
+}
+(function(){
+  const saved=localStorage.getItem('traderOS_theme')||'light';
+  setTheme(saved);
+})();
+
+loadBooks();render();
+</script>
+</body>
+</html>
